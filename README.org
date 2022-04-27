@@ -1,0 +1,24 @@
+* todoist-org-export.el
+
+An Emacs Lisp function to push tasks of org-agenda as tasks of [[https://todoist.com/][todoist]].
+
+** Dependencies
+
+- =ox-icalendar.el=
+  - =ox-icalendar.el= is part of GNU Emacs.
+- [[https://github.com/abrochard/emacs-todoist][=todoist.el=]]
+  - You can install via melpa.
+
+** Installation
+
+- Download =todoist-org-export.el= and run =(load-file "/path/to/todoist-org-export.el")=
+- Or, place =todoist-org-export.el= to somewhere suitable and run =(require 'todoist-org-export)=.
+
+** Usage
+
+1. =M-x org-agenda= to open a list of agenda
+2. =M-x org-current-agenda-export-todoist= to export the current tasks.
+
+** Note
+
+This is, at least currently, my very personal project, and I have no plan to implement/test any features beyond my personal usage. Nevertheless, any improvement or feedback (via GitHub Issues and/or Pull Request) is welcome.
