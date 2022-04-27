@@ -6,7 +6,7 @@ An Emacs Lisp function to push tasks of org-agenda as tasks of [[https://todoist
 
 - =ox-icalendar.el=
   - =ox-icalendar.el= is part of GNU Emacs.
-- [[https://github.com/abrochard/emacs-todoist][=todoist.el=]]
+- [[https://github.com/abrochard/emacs-todoist][todoist.el]]
   - You can install via melpa.
 
 ** Installation
