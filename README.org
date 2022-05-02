@@ -1,5 +1,8 @@
 * todoist-org-export.el
 
+[[https://github.com/MasWag/todoist-org-export/actions/workflows/unit_test.yml][https://github.com/MasWag/todoist-org-export/actions/workflows/unit_test.yml/badge.svg?branch=master]]
+[[./LICENSE][https://img.shields.io/badge/License-GPLv3-blue.svg]]
+
 An Emacs Lisp function to push tasks of org-agenda as tasks of [[https://todoist.com/][todoist]].
 
 ** Dependencies
