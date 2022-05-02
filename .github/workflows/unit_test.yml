@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  doc:
+  unit_test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -18,4 +18,4 @@ jobs:
 
     - name: Run unit test
       run: |
-        emacs -Q --batch  -L . --eval "(package-initialize)" --eval "(package-install 'todoist)" -l ./test-todoist-org-export.el --eval '(setq ert-batch-backtrace-right-margin 100)'  --eval '(ert-run-tests-batch-and-exit (quote t))'
+        emacs -Q --batch  -L . --eval "(package-initialize)" --eval "(package-refresh-contents)" --eval "(package-install 'todoist)" -l ./test-todoist-org-export.el --eval '(setq ert-batch-backtrace-right-margin 100)'  --eval '(ert-run-tests-batch-and-exit (quote t))'
