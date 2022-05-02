@@ -50,14 +50,19 @@
 
 (defun todoist-org-export--find-todoist-project-id (projects project_name)
   "Find the project id of the project.
+This function does not require the set up of todoist's API key.
 
 PROJECTS the list of all projects.
 PROJECT_NAME the name of the project."
-  (todoist--project-id (-first (lambda (project) (equal (todoist--project-name project) project_name)) projects)))
+  (todoist--project-id
+   (-first (lambda (project) (equal (todoist--project-name project) project_name))
+           projects)))
 
 (defun todoist-org-export--add-task
     (entry summary location description categories timezone class)
-  "Add a task in todoist."
+  "Add a task in todoist.
+This function REQUIRES the set up of todoist's API key.
+"
 
   (let ((start (or (and (memq 'todo-start org-icalendar-use-scheduled)
 			(org-element-property :scheduled entry))
@@ -101,6 +106,7 @@ PROJECT_NAME the name of the project."
     "DUMMY"))
 
 (defun org-todoist-entry (entry contents info)
+  "This function REQUIRES the set up of todoist's API key."
   (unless (org-element-property :footnote-section-p entry)
     (let* ((type (org-element-type entry))
 	   ;; Determine contents really associated to the entry.  For
@@ -159,7 +165,8 @@ PROJECT_NAME the name of the project."
 	    (todoist-org-export--add-task entry summary loc desc cat tz class))))))
 
 (defun org-current-agenda-export-todoist ()
-  "Export the current agenda as tasks of todoist."
+  "Export the current agenda as tasks of todoist.
+This function REQUIRES the set up of todoist's API key."
   (interactive)
   (org-export-string-as
    (with-output-to-string
