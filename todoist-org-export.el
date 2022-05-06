@@ -186,7 +186,8 @@ This function REQUIRES the set up of todoist's API key."
 				      (org-entry-end-position))))))))
 	   (forward-line)))))
    'todoist t
-   '(:ascii-charset utf-8 :ascii-links-to-notes nil)))
+   '(:ascii-charset utf-8 :ascii-links-to-notes nil
+                    :icalendar-include-todo all)))
 
 ;;; Define an org exporter for todoist.
 (org-export-define-derived-backend 'todoist 'ascii
