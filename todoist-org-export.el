@@ -201,4 +201,5 @@ This function REQUIRES the set up of todoist's API key."
 		     (section . ignore)
 		     (template . ignore)))
 
+(provide 'todoist-org-export)
 ;;; todoist-org-export.el ends here
