@@ -63,20 +63,34 @@ PROJECT_NAME the name of the project."
    (-first (lambda (project) (equal (todoist--project-name project) project_name))
            projects)))
 
+(defun todoist-org-export--new-task (summary start priority categories timezone)
+  "Add a simplified task in Todoist with essential information."
+  (let* ((due (if start
+                  (format-time-string "%Y-%m-%d" (org-time-string-to-time start))
+                  ""))
+         ;; Priority in Todoist: 4 is the highest priority, 1 is the lowest priority.
+         ;; Adjusting the priority to match Todoist's scale.
+        (todoist-priority (+ (- 3 (- org-priority-lowest org-priority-highest))
+                     (- org-priority-lowest
+                        (or priority org-priority-default))))
+         ;; Find the project ID, defaulting to Inbox if not found.
+         (project-id (todoist-org-export--find-todoist-project-id
+                      (todoist--get-projects)
+                      (or categories "Inbox"))))
+    ;; POST the task to Todoist
+    (todoist--query "POST" "/tasks"
+                    `(("content" . ,summary)
+                      ("due_string" . ,due)
+                      ("project_id" . ,project-id)
+                      ("priority" . ,todoist-priority)))))
+
 (defun todoist-org-export--add-task
     (entry summary location description categories timezone class)
   "Add a task in todoist.This function REQUIRES the set up of todoist's API key."
   (let ((start (org-element-property :scheduled entry))
-        ;; priority: 4 is the highest priority, 1 is the lowest priority
-        (priority (+ (- 3 (- org-priority-lowest org-priority-highest))
-                     (- org-priority-lowest
-                        (or (org-element-property :priority entry)
-    	                    org-priority-default))))
-        ;; ID of the proejct. We use Inbox by default.
-        (project-id (todoist-org-export--find-todoist-project-id
-                     (todoist--get-projects)
-                     (or categories "Inbox"))))
-
+        ;; Convert Org-mode priority to a number. Org-mode priorities are letters by default.
+        (priority (or (org-element-property :priority entry)
+                      org-priority-default)))
     ;; We need to extract a string from a text-property
     (set-text-properties 0 (length summary) nil summary)
     ;; Make the due string
@@ -89,15 +103,71 @@ PROJECT_NAME the name of the project."
                      (org-icalendar-convert-timestamp start "" nil timezone)))
                  ;; If the entry is unscheduled, we use empty due_string
                  "")))
-      ;; We add task only if it is TODO
-      (if (eq (org-element-property :todo-type entry) 'todo)
-          (todoist--query
-           "POST" "/tasks"
-           (append `(("content" . ,summary)
-                     ("due_string" . ,due)
-                     ("project_id" . ,project-id)
-                     ("priority" . ,priority)))))
-      "DUMMY")))
+      ;; Call the simplified Todoist task adding function.
+      (todoist-org-export--new-task summary start priority categories timezone))))
+
+(defun org-export-current-line-to-todoist ()
+  "Export the current line in org-agenda to a Todoist task."
+  (interactive)
+  (if (eq major-mode 'org-agenda-mode)
+      (let* ((marker (or (org-get-at-bol 'org-hd-marker)
+                         (org-get-at-bol 'org-marker)))
+             (buffer (and marker (marker-buffer marker)))
+             (pos (and marker (marker-position marker)))
+             summary start priority category)
+        (when buffer
+          (with-current-buffer buffer
+            (goto-char pos)
+            ;; Extract properties from the org item
+            (setq summary (org-get-heading t t t t)
+                  start (org-entry-get pos "SCHEDULED")
+                  priority (string-to-char
+                            (org-entry-get pos "PRIORITY"))
+                  category (org-entry-get pos "CATEGORY"))))
+        ;; Convert Org-mode priority to a number (if present)
+        (let (;; Assuming the local timezone; adjust as necessary
+              (timezone (current-time-zone)))
+          ;; Export to Todoist using the simplified function
+          (todoist-org-export--new-task summary start priority category timezone))
+        (message "Exported current line to Todoist"))
+    (message "Not in org-agenda mode.")))
+
+
+;; (defun todoist-org-export--add-task
+;;     (entry summary location description categories timezone class)
+;;   "Add a task in todoist.This function REQUIRES the set up of todoist's API key."
+;;   (let ((start (org-element-property :scheduled entry))
+;;         ;; priority: 4 is the highest priority, 1 is the lowest priority
+;;         (priority (+ (- 3 (- org-priority-lowest org-priority-highest))
+;;                      (- org-priority-lowest
+;;                         (or (org-element-property :priority entry)
+;;     	                    org-priority-default))))
+;;         ;; ID of the proejct. We use Inbox by default.
+;;         (project-id (todoist-org-export--find-todoist-project-id
+;;                      (todoist--get-projects)
+;;                      (or categories "Inbox"))))
+
+;;     ;; We need to extract a string from a text-property
+;;     (set-text-properties 0 (length summary) nil summary)
+;;     ;; Make the due string
+;;     (let ((due (if start
+;;                    (replace-regexp-in-string
+;;                     "\\([0-9][0-9][0-9][0-9]\\)\\([0-9][0-9]\\)"
+;;                     "\\1-\\2-"
+;;                     (replace-regexp-in-string
+;;                      ".*:" ""
+;;                      (org-icalendar-convert-timestamp start "" nil timezone)))
+;;                  ;; If the entry is unscheduled, we use empty due_string
+;;                  "")))
+;;       ;; We add task only if it is TODO
+;;       (if (eq (org-element-property :todo-type entry) 'todo)
+;;           (todoist--query
+;;            "POST" "/tasks"
+;;            (append `(("content" . ,summary)
+;;                      ("due_string" . ,due)
+;;                      ("project_id" . ,project-id)
+;;                      ("priority" . ,priority)))))
+;;       "DUMMY")))
 
 (defun org-todoist-entry (entry contents info)
   "This function REQUIRES the set up of todoist's API key."
