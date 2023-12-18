@@ -1,6 +1,6 @@
-* todoist-org-export.el
+* org-export-todoist.el
 
-[[https://github.com/MasWag/todoist-org-export/actions/workflows/unit_test.yml][https://github.com/MasWag/todoist-org-export/actions/workflows/unit_test.yml/badge.svg?branch=master]]
+[[https://github.com/MasWag/org-export-todoist/actions/workflows/unit_test.yml][https://github.com/MasWag/org-export-todoist/actions/workflows/unit_test.yml/badge.svg?branch=master]]
 [[./LICENSE][https://img.shields.io/badge/License-GPLv3-blue.svg]]
 
 An Emacs Lisp function to push tasks of org-agenda as tasks of [[https://todoist.com/][todoist]].
@@ -14,8 +14,8 @@ An Emacs Lisp function to push tasks of org-agenda as tasks of [[https://todoist
 
 ** Installation
 
-- Download =todoist-org-export.el= and run =(load-file "/path/to/todoist-org-export.el")=
-- Or, place =todoist-org-export.el= to somewhere suitable and run =(require 'todoist-org-export)=.
+- Download =org-export-todoist.el= and run =(load-file "/path/to/org-export-todoist.el")=
+- Or, place =org-export-todoist.el= to somewhere suitable and run =(require 'org-export-todoist)=.
 
 ** Usage
 
@@ -31,5 +31,5 @@ This is, at least currently, my very personal project, and I have no plan to imp
 Unit test can be run as follows.
 
 #+BEGIN_SRC sh
-  emacs -Q --batch  -L . --eval "(package-initialize)" --eval "(package-install 'todoist)" -l ./test-todoist-org-export.el --eval '(setq ert-batch-backtrace-right-margin 100)'  --eval '(ert-run-tests-batch-and-exit (quote t))'
+  emacs -Q --batch  -L . --eval "(package-initialize)" --eval "(package-install 'todoist)" -l ./test-org-export-todoist.el --eval '(setq ert-batch-backtrace-right-margin 100)'  --eval '(ert-run-tests-batch-and-exit (quote t))'
 #+END_SRC

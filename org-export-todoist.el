@@ -1,4 +1,4 @@
-;;; todoist-org-export.el --- Push org-agenda as tasks of todoist -*- lexical-binding: t; -*-
+;;; org-export-todoist.el --- Push org-agenda as tasks of todoist -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022 Masaki Waga
 
@@ -22,7 +22,7 @@
 ;; Version: HEAD
 ;; Author: Masaki Waga
 ;; Keywords: todoist org-mode
-;; URL: https://github.com/MasWag/todoist-org-export
+;; URL: https://github.com/MasWag/org-export-todoist
 ;; License: GNU General Public License >= 3
 
 ;;; Commentary:
@@ -53,7 +53,7 @@
   :group 'ox-agenda-todoist
   :type 'bool)
 
-(defun todoist-org-export--find-todoist-project-id (projects project_name)
+(defun org-export-todoist--find-todoist-project-id (projects project_name)
   "Find the project id of the project.
 This function does not require the set up of todoist's API key.
 
@@ -63,7 +63,7 @@ PROJECT_NAME the name of the project."
    (-first (lambda (project) (equal (todoist--project-name project) project_name))
            projects)))
 
-(defun todoist-org-export--new-task (summary start priority categories timezone)
+(defun org-export-todoist--new-task (summary start priority categories timezone)
   "Add a simplified task in Todoist with essential information."
   (let* ((due (if start
                   (format-time-string "%Y-%m-%d" (org-time-string-to-time start))
@@ -74,17 +74,18 @@ PROJECT_NAME the name of the project."
                      (- org-priority-lowest
                         (or priority org-priority-default))))
          ;; Find the project ID, defaulting to Inbox if not found.
-         (project-id (todoist-org-export--find-todoist-project-id
+         (project-id (org-export-todoist--find-todoist-project-id
                       (todoist--get-projects)
                       (or categories "Inbox"))))
     ;; POST the task to Todoist
+    (message "Export the following task to Todoist: %s %s %s %s" summary due project-id todoist-priority)
     (todoist--query "POST" "/tasks"
                     `(("content" . ,summary)
                       ("due_string" . ,due)
                       ("project_id" . ,project-id)
                       ("priority" . ,todoist-priority)))))
 
-(defun todoist-org-export--add-task
+(defun org-export-todoist--add-task
     (entry summary location description categories timezone class)
   "Add a task in todoist.This function REQUIRES the set up of todoist's API key."
   (let ((start (org-element-property :scheduled entry))
@@ -104,7 +105,9 @@ PROJECT_NAME the name of the project."
                  ;; If the entry is unscheduled, we use empty due_string
                  "")))
       ;; Call the simplified Todoist task adding function.
-      (todoist-org-export--new-task summary start priority categories timezone))))
+      (org-export-todoist--new-task summary due priority categories timezone)
+      ;; This must return a string
+      "DUMMY")))
 
 (defun org-export-current-line-to-todoist ()
   "Export the current line in org-agenda to a Todoist task."
@@ -128,12 +131,12 @@ PROJECT_NAME the name of the project."
         (let (;; Assuming the local timezone; adjust as necessary
               (timezone (current-time-zone)))
           ;; Export to Todoist using the simplified function
-          (todoist-org-export--new-task summary start priority category timezone))
+          (org-export-todoist--new-task summary start priority category timezone))
         (message "Exported current line to Todoist"))
     (message "Not in org-agenda mode.")))
 
 
-;; (defun todoist-org-export--add-task
+;; (defun org-export-todoist--add-task
 ;;     (entry summary location description categories timezone class)
 ;;   "Add a task in todoist.This function REQUIRES the set up of todoist's API key."
 ;;   (let ((start (org-element-property :scheduled entry))
@@ -143,7 +146,7 @@ PROJECT_NAME the name of the project."
 ;;                         (or (org-element-property :priority entry)
 ;;     	                    org-priority-default))))
 ;;         ;; ID of the proejct. We use Inbox by default.
-;;         (project-id (todoist-org-export--find-todoist-project-id
+;;         (project-id (org-export-todoist--find-todoist-project-id
 ;;                      (todoist--get-projects)
 ;;                      (or categories "Inbox"))))
 
@@ -221,7 +224,7 @@ PROJECT_NAME the name of the project."
     	         :TIMEZONE entry
     	         (org-property-inherit-p "TIMEZONE"))))
         ;; Task: First check if it is appropriate to export it.  If
-        ;; so, call `todoist-org-export--add-task' to transcode it into
+        ;; so, call `org-export-todoist--add-task' to transcode it into
         ;; a "VTODO" component.
         (when (and todo-type
     	           (cl-case (plist-get info :icalendar-include-todo)
@@ -231,7 +234,7 @@ PROJECT_NAME the name of the project."
     		               (not (org-icalendar-blocked-headline-p
     			                 entry info))))
     	             ((t) (eq todo-type 'todo))))
-          (todoist-org-export--add-task entry summary loc desc cat tz class))))))
+          (org-export-todoist--add-task entry summary loc desc cat tz class))))))
 
 (defun org-current-agenda-export-todoist ()
   "Export the current agenda as tasks of todoist.
@@ -271,5 +274,5 @@ This function REQUIRES the set up of todoist's API key."
 		     (section . ignore)
 		     (template . ignore)))
 
-(provide 'todoist-org-export)
-;;; todoist-org-export.el ends here
+(provide 'org-export-todoist)
+;;; org-export-todoist.el ends here

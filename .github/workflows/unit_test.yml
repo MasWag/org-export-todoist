@@ -18,4 +18,4 @@ jobs:
 
     - name: Run unit test
       run: |
-        emacs -Q --batch  -L . --eval "(require 'package)"  --eval "(add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\"))" --eval '(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")' --eval "(package-initialize)" --eval "(package-refresh-contents)" --eval "(package-install 'todoist)" -l ./test-todoist-org-export.el --eval '(setq ert-batch-backtrace-right-margin 100)'  --eval '(ert-run-tests-batch-and-exit (quote t))'
+        emacs -Q --batch  -L . --eval "(require 'package)"  --eval "(add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\"))" --eval '(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")' --eval "(package-initialize)" --eval "(package-refresh-contents)" --eval "(package-install 'todoist)" -l ./test-org-export-todoist.el --eval '(setq ert-batch-backtrace-right-margin 100)'  --eval '(ert-run-tests-batch-and-exit (quote t))'

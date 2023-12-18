@@ -1,4 +1,4 @@
-;;; test-todoist-org-export.el --- Unit test of todoist-org-export.el -*- lexical-binding: t; -*-
+;;; test-org-export-todoist.el --- Unit test of org-export-todoist.el -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022 Masaki Waga
 
@@ -22,27 +22,27 @@
 ;; Version: HEAD
 ;; Author: Masaki Waga
 ;; Keywords: todoist org-mode
-;; URL: https://github.com/MasWag/todoist-org-export
+;; URL: https://github.com/MasWag/org-export-todoist
 ;; License: GNU General Public License >= 3
 
 ;;; Code:
 
 (require 'ert)
-(load-file "./todoist-org-export.el")
+(load-file "./org-export-todoist.el")
 
 (defvar example-projects
   '(((id . 937158224) (color . 48) (name . "Inbox") (comment_count . 0) (shared . :json-false) (favorite . :json-false) (sync_id . 0) (inbox_project . t)) ((id . 937158360) (order . 1) (color . 35) (name . "Research") (comment_count . 0) (shared . :json-false) (favorite . :json-false) (sync_id . 0)) ((id . 2203704045) (parent . 937158360) (parent_id . 937158360) (order . 8) (color . 35) (name . "Symbolic Monitoring") (comment_count . 3) (shared . :json-false) (favorite . t) (sync_id . 0))))
 
-(ert-deftest test-todoist-org-export--find-todoist-project-id--example-inbox ()
+(ert-deftest test-org-export-todoist--find-todoist-project-id--example-inbox ()
   (should (= 937158224
-             (todoist-org-export--find-todoist-project-id example-projects "Inbox"))))
+             (org-export-todoist--find-todoist-project-id example-projects "Inbox"))))
 
-(ert-deftest test-todoist-org-export--find-todoist-project-id--example-research ()
+(ert-deftest test-org-export-todoist--find-todoist-project-id--example-research ()
   (should (= 937158360
-             (todoist-org-export--find-todoist-project-id example-projects "Research"))))
+             (org-export-todoist--find-todoist-project-id example-projects "Research"))))
 
-(ert-deftest test-todoist-org-export--find-todoist-project-id--example-symbolic-monitoring ()
+(ert-deftest test-org-export-todoist--find-todoist-project-id--example-symbolic-monitoring ()
   (should (= 2203704045
-             (todoist-org-export--find-todoist-project-id example-projects "Symbolic Monitoring"))))
+             (org-export-todoist--find-todoist-project-id example-projects "Symbolic Monitoring"))))
 
-;;; test-todoist-org-export.el ends here
+;;; test-org-export-todoist.el ends here
